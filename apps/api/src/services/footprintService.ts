@@ -3,7 +3,7 @@ import { NotFoundError, ValidationError } from '../errors/AppError.js';
 import type { FootprintBreakdown, Category } from '../types/index.js';
 
 const prisma = new PrismaClient();
-type EmissionFactorLookup = { category: string; subtype: string; kgCo2: number };
+type EmissionFactorLookup = Awaited<ReturnType<typeof prisma.emissionFactor.findMany>>[number];
 
 // In-memory cache for emission factors (loaded once at startup)
 let emissionFactorCache: Map<string, number> | null = null;

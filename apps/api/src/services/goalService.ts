@@ -3,7 +3,7 @@ import { NotFoundError, ForbiddenError } from '../errors/AppError.js';
 import { getUserFootprint } from './footprintService.js';
 
 const prisma = new PrismaClient();
-type Goal = Awaited<ReturnType<typeof prisma.goal.create>>;
+type Goal = Awaited<ReturnType<typeof prisma.goal.findMany>>[number];
 
 export type GoalWithProgress = Goal & {
   currentKg: number;
