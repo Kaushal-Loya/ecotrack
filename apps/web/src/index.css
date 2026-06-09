@@ -1,0 +1,109 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@600;700;800&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    color-scheme: light dark;
+  }
+
+  /* Focus visible for keyboard navigation */
+  :focus-visible {
+    @apply outline-2 outline-offset-2 outline-forest-500;
+  }
+
+  /* Remove focus for mouse users */
+  :focus:not(:focus-visible) {
+    outline: none;
+  }
+
+  /* Respect reduced motion */
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply bg-gray-950 text-gray-100 font-sans antialiased;
+    min-height: 100dvh;
+  }
+}
+
+@layer components {
+  .btn {
+    @apply inline-flex items-center justify-center gap-2 rounded-lg px-4 py-2.5 text-sm font-semibold
+           transition-all duration-200 focus-visible:ring-2 focus-visible:ring-offset-2
+           disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+
+  .btn-primary {
+    @apply btn bg-forest-600 text-white hover:bg-forest-500 focus-visible:ring-forest-500
+           active:scale-95 shadow-lg shadow-forest-900/30;
+  }
+
+  .btn-secondary {
+    @apply btn bg-gray-800 text-gray-100 hover:bg-gray-700 focus-visible:ring-gray-500
+           border border-gray-700;
+  }
+
+  .btn-danger {
+    @apply btn bg-red-900/50 text-red-300 hover:bg-red-800/50 focus-visible:ring-red-500
+           border border-red-800;
+  }
+
+  .card {
+    @apply rounded-2xl bg-gray-900 border border-gray-800 p-6;
+  }
+
+  .card-hover {
+    @apply card transition-all duration-200 hover:border-forest-700 hover:shadow-lg hover:shadow-forest-950/50;
+  }
+
+  .input {
+    @apply w-full rounded-lg bg-gray-800 border border-gray-700 px-4 py-2.5 text-sm text-gray-100
+           placeholder-gray-500 transition-colors duration-200
+           focus:outline-none focus:border-forest-500 focus:ring-1 focus:ring-forest-500
+           disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+
+  .label {
+    @apply block text-sm font-medium text-gray-300 mb-1.5;
+  }
+
+  .error-msg {
+    @apply mt-1 text-xs text-red-400;
+  }
+
+  .badge {
+    @apply inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-semibold;
+  }
+
+  .badge-green {
+    @apply badge bg-forest-900/60 text-forest-300 border border-forest-800;
+  }
+
+  .badge-yellow {
+    @apply badge bg-earth-900/60 text-earth-300 border border-earth-800;
+  }
+
+  .badge-blue {
+    @apply badge bg-sky-900/60 text-sky-300 border border-sky-800;
+  }
+
+  /* Skip to main content for accessibility */
+  .skip-link {
+    @apply absolute -top-full left-4 z-50 rounded-b-lg bg-forest-600 px-4 py-2 text-sm font-semibold text-white
+           focus:top-0 transition-all duration-200;
+  }
+}

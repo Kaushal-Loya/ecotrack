@@ -1,0 +1,105 @@
+name: CI
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main]
+
+jobs:
+  lint-typecheck:
+    name: Lint & Type Check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Type check (API)
+        working-directory: apps/api
+        run: npm run typecheck
+
+      - name: Type check (Web)
+        working-directory: apps/web
+        run: npm run typecheck
+
+  test-api:
+    name: API Unit Tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Setup API environment
+        working-directory: apps/api
+        run: |
+          cp .env.example .env
+          echo "JWT_SECRET=ci-test-secret-min-32-characters-long" >> .env
+          echo "JWT_REFRESH_SECRET=ci-refresh-secret-min-32-chars-long" >> .env
+
+      - name: Generate Prisma client
+        working-directory: apps/api
+        run: npm run db:generate
+
+      - name: Run API unit tests with coverage
+        working-directory: apps/api
+        run: npm test -- --coverage
+        env:
+          DATABASE_URL: file:./test.db
+
+  test-web:
+    name: Web Unit Tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run web unit tests with coverage
+        working-directory: apps/web
+        run: npm test -- --coverage
+
+  security-audit:
+    name: Security Audit
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: npm audit (API)
+        working-directory: apps/api
+        run: npm audit --audit-level=high
+
+      - name: npm audit (Web)
+        working-directory: apps/web
+        run: npm audit --audit-level=high
