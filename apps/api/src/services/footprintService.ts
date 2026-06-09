@@ -12,7 +12,10 @@ async function getEmissionFactors(): Promise<Map<string, number>> {
 
   const factors = await prisma.emissionFactor.findMany();
   emissionFactorCache = new Map(
-    factors.map((f) => [`${f.category}:${f.subtype}`, f.kgCo2])
+    factors.map((f: { category: string; subtype: string; kgCo2: number }) => [
+      `${f.category}:${f.subtype}`,
+      f.kgCo2,
+    ])
   );
   return emissionFactorCache;
 }

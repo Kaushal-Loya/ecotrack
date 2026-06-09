@@ -1,8 +1,19 @@
-import { PrismaClient, Goal } from '@prisma/client';
+import { PrismaClient } from '@prisma/client';
 import { NotFoundError, ForbiddenError } from '../errors/AppError.js';
 import { getUserFootprint } from './footprintService.js';
 
 const prisma = new PrismaClient();
+type Goal = {
+  id: string;
+  userId: string;
+  title: string;
+  targetKg: number;
+  baselineKg: number;
+  deadline: Date;
+  achieved: boolean;
+  createdAt: Date;
+  updatedAt: Date;
+};
 
 export type GoalWithProgress = Goal & {
   currentKg: number;
@@ -27,7 +38,7 @@ export async function listGoals(userId: string): Promise<GoalWithProgress[]> {
   const footprint = await getUserFootprint(userId);
   const currentKg = footprint.total;
 
-  return goals.map((goal) => {
+  return goals.map((goal: Goal) => {
     const reduced = goal.baselineKg - currentKg;
     const targetReduction = goal.baselineKg - goal.targetKg;
     const progressPercent =
