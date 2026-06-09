@@ -5,4 +5,4 @@ import { createApp } from '../src/app.js';
 // WITHOUT calling app.listen()
 const app = createApp();
 
-export default app;
+module.exports = app;
