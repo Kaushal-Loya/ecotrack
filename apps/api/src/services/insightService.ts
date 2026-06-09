@@ -147,12 +147,12 @@ const INSIGHT_RULES: InsightRule[] = [
 export function getPersonalisedInsights(
   breakdown: { transport: number; diet: number; energy: number; shopping: number }
 ): InsightTip[] {
-  const categories: [Category, number][] = [
-    ['transport', breakdown.transport],
-    ['diet', breakdown.diet],
-    ['energy', breakdown.energy],
-    ['shopping', breakdown.shopping],
-  ].sort((a, b) => b[1] - a[1]) as [Category, number][];
+  const categories = [
+    ['transport', breakdown.transport] as const,
+    ['diet', breakdown.diet] as const,
+    ['energy', breakdown.energy] as const,
+    ['shopping', breakdown.shopping] as const,
+  ].sort((a, b) => b[1] - a[1]) as unknown as [Category, number][];
 
   const results: InsightTip[] = [];
   const usedCategories = new Set<Category>();

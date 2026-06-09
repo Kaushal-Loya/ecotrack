@@ -68,4 +68,20 @@ router.get(
   }
 );
 
+// POST /footprint/factors/invalidate — admin: clear in-memory cache
+router.post(
+  '/factors/invalidate',
+  authenticate,
+  async (_req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+      footprintService.invalidateEmissionFactorCache();
+      // Re-load into cache immediately so next request is fast
+      await footprintService.getAllEmissionFactors();
+      res.json({ status: 'success', message: 'Emission factor cache invalidated and reloaded' });
+    } catch (err) {
+      next(err);
+    }
+  }
+);
+
 export default router;

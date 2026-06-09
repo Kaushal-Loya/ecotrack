@@ -1,4 +1,5 @@
 import { PrismaClient } from '@prisma/client';
+import bcrypt from 'bcryptjs';
 
 const prisma = new PrismaClient();
 
@@ -50,6 +51,19 @@ async function main(): Promise<void> {
   }
 
   console.log(`✅ Seeded ${emissionFactors.length} emission factors`);
+
+  // Seed demo user for E2E tests (idempotent)
+  const demoEmail = 'demo@example.com';
+  const existing = await prisma.user.findUnique({ where: { email: demoEmail } });
+  if (!existing) {
+    const passwordHash = await bcrypt.hash('DemoPass1', 12);
+    await prisma.user.create({
+      data: { email: demoEmail, passwordHash, name: 'Demo User' },
+    });
+    console.log('✅ Seeded demo user (demo@example.com / DemoPass1)');
+  } else {
+    console.log('ℹ️  Demo user already exists, skipping');
+  }
 }
 
 main()

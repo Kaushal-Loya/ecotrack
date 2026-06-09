@@ -65,9 +65,10 @@ router.patch(
     try {
       const userId = req.user!.sub;
       const data = req.body as z.infer<typeof updateGoalSchema>;
+      const { deadline, ...rest } = data;
       const goal = await goalService.updateGoal(userId, req.params.id, {
-        ...data,
-        ...(data.deadline ? { deadline: new Date(data.deadline) } : {}),
+        ...rest,
+        ...(deadline ? { deadline: new Date(deadline) } : {}),
       });
       res.json({ status: 'success', data: goal });
     } catch (err) {

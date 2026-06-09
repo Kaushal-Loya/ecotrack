@@ -14,7 +14,7 @@ export function validate(schema: ZodSchema, target: Target = 'body') {
       return next(result.error); // passed to errorHandler which handles ZodError
     }
     // Replace with parsed (and stripped) data
-    (req as Record<string, unknown>)[target] = result.data;
+    (req as unknown as Record<string, unknown>)[target] = result.data;
     next();
   };
 }
