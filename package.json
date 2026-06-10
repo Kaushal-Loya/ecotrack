@@ -14,7 +14,7 @@
     "test": "npm run test --workspaces --if-present",
     "lint": "npm run lint --workspaces --if-present",
     "typecheck": "npm run typecheck --workspaces --if-present",
-    "prepare": "node -e \"try { require('child_process').execSync('husky') } catch (e) {}\""
+    "prepare": "node -e \"if (process.env.HUSKY !== '0' && process.env.CI !== '1' && process.env.CI !== 'true') { require('child_process').execSync('husky', {stdio: 'inherit'}) }\""
   },
   "lint-staged": {
     "apps/api/src/**/*.ts": [
