@@ -61,23 +61,27 @@ export async function calculateAndSaveFootprint(
   const MONTHS_PER_YEAR = 12;
 
   const transportKg =
-    inputs.weeklyCarKm * WEEKS_PER_YEAR * TRANSPORT_FACTORS.carPerKm +
-    inputs.weeklyBusKm * WEEKS_PER_YEAR * TRANSPORT_FACTORS.busPerKm +
-    inputs.weeklyTrainKm * WEEKS_PER_YEAR * TRANSPORT_FACTORS.trainPerKm +
+    WEEKS_PER_YEAR *
+      (inputs.weeklyCarKm * TRANSPORT_FACTORS.carPerKm +
+        inputs.weeklyBusKm * TRANSPORT_FACTORS.busPerKm +
+        inputs.weeklyTrainKm * TRANSPORT_FACTORS.trainPerKm) +
     inputs.yearlyFlightKm * TRANSPORT_FACTORS.flightPerKm;
 
   const dietKg =
-    inputs.beefMealsPerWeek * WEEKS_PER_YEAR * DIET_FACTORS.beefPerMeal +
-    inputs.otherMeatMealsPerWeek * WEEKS_PER_YEAR * DIET_FACTORS.otherMeatPerMeal +
-    inputs.vegetarianMealsPerWeek * WEEKS_PER_YEAR * DIET_FACTORS.vegetarianPerMeal;
+    WEEKS_PER_YEAR *
+    (inputs.beefMealsPerWeek * DIET_FACTORS.beefPerMeal +
+      inputs.otherMeatMealsPerWeek * DIET_FACTORS.otherMeatPerMeal +
+      inputs.vegetarianMealsPerWeek * DIET_FACTORS.vegetarianPerMeal);
 
   const energyKg =
-    inputs.monthlyElectricityKwh * MONTHS_PER_YEAR * ENERGY_FACTORS.electricityPerKwh +
-    inputs.monthlyGasKwh * MONTHS_PER_YEAR * ENERGY_FACTORS.naturalGasPerKwh;
+    MONTHS_PER_YEAR *
+    (inputs.monthlyElectricityKwh * ENERGY_FACTORS.electricityPerKwh +
+      inputs.monthlyGasKwh * ENERGY_FACTORS.naturalGasPerKwh);
 
   const shoppingKg =
-    inputs.monthlyClothingItems * MONTHS_PER_YEAR * SHOPPING_FACTORS.clothingPerItem +
-    inputs.monthlyOnlineOrders * MONTHS_PER_YEAR * SHOPPING_FACTORS.onlineOrderPerItem;
+    MONTHS_PER_YEAR *
+    (inputs.monthlyClothingItems * SHOPPING_FACTORS.clothingPerItem +
+      inputs.monthlyOnlineOrders * SHOPPING_FACTORS.onlineOrderPerItem);
 
   const breakdown: FootprintBreakdown = {
     transport: parseFloat(transportKg.toFixed(2)),

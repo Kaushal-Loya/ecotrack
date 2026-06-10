@@ -24,18 +24,18 @@ export default function GoalsPage() {
   const [formError, setFormError] = useState<string | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<string | null>(null);
 
-  function fetchGoals(): void {
+  const fetchGoals = useCallback((): void => {
     setLoading(true);
     api
       .get('/goals')
       .then((res) => setGoals(res.data.data as Goal[]))
       .catch(() => setError('Failed to load goals'))
       .finally(() => setLoading(false));
-  }
+  }, []);
 
   useEffect(() => {
     fetchGoals();
-  }, []);
+  }, [fetchGoals]);
 
   async function handleCreate(e: React.FormEvent): Promise<void> {
     e.preventDefault();

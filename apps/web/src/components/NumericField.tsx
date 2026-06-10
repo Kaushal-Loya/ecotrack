@@ -1,3 +1,5 @@
+import { memo } from 'react';
+
 interface NumericFieldProps {
   id: string;
   label: string;
@@ -7,7 +9,7 @@ interface NumericFieldProps {
   placeholder?: string;
 }
 
-export default function NumericField({
+const NumericField = memo(function NumericField({
   id,
   label,
   value,
@@ -33,4 +35,6 @@ export default function NumericField({
       />
     </div>
   );
-}
+});
+
+export default NumericField;

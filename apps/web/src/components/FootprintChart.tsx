@@ -1,3 +1,4 @@
+import { memo } from 'react';
 import { useMemo } from 'react';
 import {
   PieChart,
@@ -7,8 +8,7 @@ import {
   Legend,
   ResponsiveContainer,
 } from 'recharts';
-import type { FootprintBreakdown } from '../types/index.js';
-import type { Category } from '../types/index.js';
+import type { FootprintBreakdown, Category } from '../types/index.js';
 import { categoryHex, CATEGORY_LABELS, formatCo2 } from '../utils/emissions.js';
 
 interface FootprintChartProps {
@@ -21,7 +21,7 @@ interface ChartEntry {
   category: Category;
 }
 
-export default function FootprintChart({ breakdown }: FootprintChartProps) {
+const FootprintChart = memo(function FootprintChart({ breakdown }: FootprintChartProps) {
   const data = useMemo<ChartEntry[]>(() => {
     const entries: [Category, number][] = [
       ['transport', breakdown.transport],
@@ -125,4 +125,6 @@ export default function FootprintChart({ breakdown }: FootprintChartProps) {
       </details>
     </figure>
   );
-}
+});
+
+export default FootprintChart;

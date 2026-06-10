@@ -4,4 +4,4 @@ import { createApp } from '../src/app.js';
 // dotenv is NOT used here — env vars are injected by Vercel at runtime.
 const app = createApp();
 
-module.exports = app;
+export default app;

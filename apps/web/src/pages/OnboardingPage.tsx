@@ -47,21 +47,21 @@ export default function OnboardingPage() {
   }
 
   function estimateTotal(): number {
-    const W = 52;  // weeks per year
-    const M = 12;  // months per year
+    const WEEKS_PER_YEAR = 52;
+    const MONTHS_PER_YEAR = 12;
     const c = EMISSION_COEFFICIENTS;
     return (
-      form.weeklyCarKm * W * c.carPerKm +
-      form.weeklyBusKm * W * c.busPerKm +
-      form.weeklyTrainKm * W * c.trainPerKm +
+      form.weeklyCarKm * WEEKS_PER_YEAR * c.carPerKm +
+      form.weeklyBusKm * WEEKS_PER_YEAR * c.busPerKm +
+      form.weeklyTrainKm * WEEKS_PER_YEAR * c.trainPerKm +
       form.yearlyFlightKm * c.flightPerKm +
-      form.beefMealsPerWeek * W * c.beefPerMeal +
-      form.otherMeatMealsPerWeek * W * c.otherMeatPerMeal +
-      form.vegetarianMealsPerWeek * W * c.vegetarianPerMeal +
-      form.monthlyElectricityKwh * M * c.electricityPerKwh +
-      form.monthlyGasKwh * M * c.naturalGasPerKwh +
-      form.monthlyClothingItems * M * c.clothingPerItem +
-      form.monthlyOnlineOrders * M * c.onlineOrderPerItem
+      form.beefMealsPerWeek * WEEKS_PER_YEAR * c.beefPerMeal +
+      form.otherMeatMealsPerWeek * WEEKS_PER_YEAR * c.otherMeatPerMeal +
+      form.vegetarianMealsPerWeek * WEEKS_PER_YEAR * c.vegetarianPerMeal +
+      form.monthlyElectricityKwh * MONTHS_PER_YEAR * c.electricityPerKwh +
+      form.monthlyGasKwh * MONTHS_PER_YEAR * c.naturalGasPerKwh +
+      form.monthlyClothingItems * MONTHS_PER_YEAR * c.clothingPerItem +
+      form.monthlyOnlineOrders * MONTHS_PER_YEAR * c.onlineOrderPerItem
     );
   }
 

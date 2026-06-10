@@ -5,8 +5,6 @@ import { api } from '../utils/api.js';
 
 interface AuthState {
   user: User | null;
-  accessToken: string | null;
-  refreshToken: string | null;
   isAuthenticated: boolean;
 
   login: (email: string, password: string) => Promise<void>;
@@ -19,14 +17,11 @@ export const useAuthStore = create<AuthState>()(
   persist(
     (set) => ({
       user: null,
-      accessToken: null,
-      refreshToken: null,
       isAuthenticated: false,
 
       setTokens: (tokens: Tokens) => {
         localStorage.setItem('accessToken', tokens.accessToken);
         localStorage.setItem('refreshToken', tokens.refreshToken);
-        set({ accessToken: tokens.accessToken, refreshToken: tokens.refreshToken });
       },
 
       login: async (email: string, password: string) => {
@@ -34,7 +29,7 @@ export const useAuthStore = create<AuthState>()(
         const { user, tokens } = data.data as { user: User; tokens: Tokens };
         localStorage.setItem('accessToken', tokens.accessToken);
         localStorage.setItem('refreshToken', tokens.refreshToken);
-        set({ user, accessToken: tokens.accessToken, refreshToken: tokens.refreshToken, isAuthenticated: true });
+        set({ user, isAuthenticated: true });
       },
 
       register: async (email: string, password: string, name?: string) => {
@@ -42,13 +37,13 @@ export const useAuthStore = create<AuthState>()(
         const { user, tokens } = data.data as { user: User; tokens: Tokens };
         localStorage.setItem('accessToken', tokens.accessToken);
         localStorage.setItem('refreshToken', tokens.refreshToken);
-        set({ user, accessToken: tokens.accessToken, refreshToken: tokens.refreshToken, isAuthenticated: true });
+        set({ user, isAuthenticated: true });
       },
 
       logout: () => {
         localStorage.removeItem('accessToken');
         localStorage.removeItem('refreshToken');
-        set({ user: null, accessToken: null, refreshToken: null, isAuthenticated: false });
+        set({ user: null, isAuthenticated: false });
       },
     }),
     {

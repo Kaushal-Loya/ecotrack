@@ -67,6 +67,8 @@ router.get(
   async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
       const userId = req.user!.sub;
+      // req.query is ParsedQs (string-based) but validate() has already run Zod
+      // parsing and replaced the raw query, so the cast below is intentional.
       const { page, pageSize, category, range } = req.query as unknown as z.infer<typeof querySchema>;
 
       const since = new Date();

@@ -140,6 +140,23 @@ const INSIGHT_RULES: InsightRule[] = [
   },
 ];
 
+// Pre-compute grouped and sorted rules (LICM + CSE)
+// This happens once at server startup instead of on every request
+const RULES_BY_CATEGORY: Record<Category, InsightRule[]> = {
+  transport: INSIGHT_RULES.filter((r) => r.category === 'transport').sort(
+    (a, b) => b.minKgThreshold - a.minKgThreshold
+  ),
+  diet: INSIGHT_RULES.filter((r) => r.category === 'diet').sort(
+    (a, b) => b.minKgThreshold - a.minKgThreshold
+  ),
+  energy: INSIGHT_RULES.filter((r) => r.category === 'energy').sort(
+    (a, b) => b.minKgThreshold - a.minKgThreshold
+  ),
+  shopping: INSIGHT_RULES.filter((r) => r.category === 'shopping').sort(
+    (a, b) => b.minKgThreshold - a.minKgThreshold
+  ),
+};
+
 /**
  * Returns the top 3 personalised tips based on the user's emission breakdown.
  * Tips are prioritised by the user's highest-emission categories.
@@ -155,20 +172,16 @@ export function getPersonalisedInsights(
   ].sort((a, b) => b[1] - a[1]) as unknown as [Category, number][];
 
   const results: InsightTip[] = [];
-  const usedCategories = new Set<Category>();
 
   for (const [category, kg] of categories) {
     if (results.length >= 3) break;
 
-    const applicable = INSIGHT_RULES.filter(
-      (r) => r.category === category && kg >= r.minKgThreshold
-    ).sort((a, b) => b.minKgThreshold - a.minKgThreshold);
+    const applicable = RULES_BY_CATEGORY[category].filter((r) => kg >= r.minKgThreshold);
 
     for (const rule of applicable) {
       if (results.length >= 3) break;
       results.push({ category: rule.category, ...rule.tip });
     }
-    usedCategories.add(category);
   }
 
   return results.slice(0, 3);

@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState, useCallback, useRef } from 'react';
 import ActivityForm from '../components/ActivityForm.js';
 import ConfirmModal from '../components/ConfirmModal.js';
 import { useActivities } from '../hooks/useActivities.js';
@@ -15,6 +15,14 @@ export default function ActivitiesPage() {
   const [logLoading, setLogLoading] = useState(false);
   const [successMsg, setSuccessMsg] = useState<string | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<string | null>(null);
+  const successTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  // Clear timer on unmount to avoid setting state after component is gone
+  useEffect(() => {
+    return () => {
+      if (successTimerRef.current) clearTimeout(successTimerRef.current);
+    };
+  }, []);
 
   useEffect(() => {
     void fetchActivities({ range });
@@ -32,7 +40,8 @@ export default function ActivitiesPage() {
     const result = await logActivity(data);
     if (result) {
       setSuccessMsg(`Logged ${formatCo2(result.co2Kg)} for ${CATEGORY_LABELS[result.category as Category]}`);
-      setTimeout(() => setSuccessMsg(null), 4000);
+      if (successTimerRef.current) clearTimeout(successTimerRef.current);
+      successTimerRef.current = setTimeout(() => setSuccessMsg(null), 4000);
     }
     setLogLoading(false);
   }

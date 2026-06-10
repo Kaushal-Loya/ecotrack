@@ -1,0 +1,21 @@
+# Enforce LF line endings for all text files (matches .prettierrc endOfLine: "lf")
+* text=auto eol=lf
+
+# Explicitly handle common file types
+*.ts   text eol=lf
+*.tsx  text eol=lf
+*.js   text eol=lf
+*.mjs  text eol=lf
+*.json text eol=lf
+*.yml  text eol=lf
+*.yaml text eol=lf
+*.md   text eol=lf
+*.css  text eol=lf
+*.html text eol=lf
+*.prisma text eol=lf
+
+# Binary files — no line-ending conversion
+*.png  binary
+*.jpg  binary
+*.ico  binary
+*.db   binary
