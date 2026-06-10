@@ -1,5 +1,5 @@
 import prisma from '../lib/prisma.js';
-import { NotFoundError, ValidationError } from '../errors/AppError.js';
+import { ValidationError } from '../errors/AppError.js';
 import type { FootprintBreakdown, Category } from '../types/index.js';
 import {
   TRANSPORT_FACTORS,
@@ -173,4 +173,3 @@ export async function getAllEmissionFactors(): Promise<
 > {
   return prisma.emissionFactor.findMany({ orderBy: [{ category: 'asc' }, { subtype: 'asc' }] });
 }
-
