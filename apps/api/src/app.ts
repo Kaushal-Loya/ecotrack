@@ -16,7 +16,14 @@ export function createApp(): express.Express {
   const app = express();
 
   // ─── Security headers ────────────────────────────────────────────────────
-  app.use(helmet());
+  // CSP is an HTML-page concern — APIs serve JSON so we disable it to avoid
+  // the browser enforcing 'default-src: none' when the frontend fetches data.
+  app.use(
+    helmet({
+      contentSecurityPolicy: false,     // Not needed for a JSON API
+      crossOriginEmbedderPolicy: false, // Would block cross-origin resources
+    })
+  );
 
   // ─── CORS — whitelist specific origins ───────────────────────────────────
   const allowedOrigins = (process.env.CORS_ORIGINS ?? 'http://localhost:5173')
