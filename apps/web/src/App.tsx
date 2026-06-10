@@ -31,10 +31,12 @@ export default function App() {
           {/* Protected routes */}
           <Route element={<ProtectedRoute />}>
             <Route path="/onboarding" element={<OnboardingPage />} />
-            <Route element={<Layout><ActivitiesPage /></Layout>} path="/activities" />
-            <Route element={<Layout><InsightsPage /></Layout>} path="/insights" />
-            <Route element={<Layout><GoalsPage /></Layout>} path="/goals" />
-            <Route element={<Layout><DashboardPage /></Layout>} path="/dashboard" />
+            <Route element={<Layout />}>
+              <Route path="/activities" element={<ActivitiesPage />} />
+              <Route path="/insights" element={<InsightsPage />} />
+              <Route path="/goals" element={<GoalsPage />} />
+              <Route path="/dashboard" element={<DashboardPage />} />
+            </Route>
           </Route>
 
           {/* Redirect root */}

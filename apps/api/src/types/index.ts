@@ -1,25 +1,24 @@
-// Shared TypeScript types for the API
+import type {
+  Category,
+  FootprintBreakdown,
+  TokenPair,
+  InsightTip,
+  PaginatedMeta,
+} from '@carbon/shared';
 
-export type Category = 'transport' | 'diet' | 'energy' | 'shopping';
+export type {
+  Category,
+  FootprintBreakdown,
+  TokenPair,
+  InsightTip,
+  PaginatedMeta,
+};
 
 export interface JwtPayload {
-  sub: string;  // user id
+  sub: string;
   email: string;
   iat?: number;
   exp?: number;
-}
-
-export interface TokenPair {
-  accessToken: string;
-  refreshToken: string;
-}
-
-export interface FootprintBreakdown {
-  transport: number;
-  diet: number;
-  energy: number;
-  shopping: number;
-  total: number;
 }
 
 export interface PaginatedResult<T> {
@@ -28,12 +27,4 @@ export interface PaginatedResult<T> {
   page: number;
   pageSize: number;
   hasMore: boolean;
-}
-
-export interface InsightTip {
-  category: Category;
-  title: string;
-  description: string;
-  potentialSavingKg: number;
-  actionUrl?: string;
 }

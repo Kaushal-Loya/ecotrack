@@ -1,5 +1,6 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import ActivityForm from '../components/ActivityForm.js';
+import ConfirmModal from '../components/ConfirmModal.js';
 import { useActivities } from '../hooks/useActivities.js';
 import type { Category } from '../types/index.js';
 import { formatCo2, CATEGORY_LABELS, toDateString } from '../utils/emissions.js';
@@ -13,6 +14,7 @@ export default function ActivitiesPage() {
   const [range, setRange] = useState<Range>('month');
   const [logLoading, setLogLoading] = useState(false);
   const [successMsg, setSuccessMsg] = useState<string | null>(null);
+  const [deleteTarget, setDeleteTarget] = useState<string | null>(null);
 
   useEffect(() => {
     void fetchActivities({ range });
@@ -35,10 +37,15 @@ export default function ActivitiesPage() {
     setLogLoading(false);
   }
 
-  async function handleDelete(id: string): Promise<void> {
-    if (!confirm('Delete this activity log?')) return;
-    await deleteActivity(id);
-  }
+  const handleDeleteConfirm = useCallback(async () => {
+    if (!deleteTarget) return;
+    await deleteActivity(deleteTarget);
+    setDeleteTarget(null);
+  }, [deleteTarget, deleteActivity]);
+
+  const handleDeleteCancel = useCallback(() => {
+    setDeleteTarget(null);
+  }, []);
 
   return (
     <div className="animate-fade-in">
@@ -146,7 +153,7 @@ export default function ActivitiesPage() {
                       {formatCo2(activity.co2Kg)}
                     </span>
                     <button
-                      onClick={() => handleDelete(activity.id)}
+                      onClick={() => setDeleteTarget(activity.id)}
                       className="text-gray-700 hover:text-red-400 text-xs transition-colors"
                       aria-label={`Delete activity logged on ${toDateString(activity.loggedAt)}`}
                     >
@@ -159,6 +166,14 @@ export default function ActivitiesPage() {
           )}
         </section>
       </div>
+
+      <ConfirmModal
+        open={deleteTarget !== null}
+        title="Delete activity"
+        message="Are you sure you want to delete this activity log? This action cannot be undone."
+        onConfirm={handleDeleteConfirm}
+        onCancel={handleDeleteCancel}
+      />
     </div>
   );
 }

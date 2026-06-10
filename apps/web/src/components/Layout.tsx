@@ -1,4 +1,4 @@
-import { Link, NavLink, useNavigate } from 'react-router-dom';
+import { Link, NavLink, useNavigate, Outlet } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth.js';
 
 const NAV_ITEMS = [
@@ -8,11 +8,7 @@ const NAV_ITEMS = [
   { to: '/goals', label: 'Goals', icon: '🎯' },
 ];
 
-interface LayoutProps {
-  children: React.ReactNode;
-}
-
-export default function Layout({ children }: LayoutProps) {
+export default function Layout() {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
 
@@ -113,7 +109,7 @@ export default function Layout({ children }: LayoutProps) {
           className="flex-1 mx-auto w-full max-w-7xl px-4 py-6 sm:px-6 animate-fade-in"
           tabIndex={-1}
         >
-          {children}
+          <Outlet />
         </main>
 
         {/* ── Footer ───────────────────────────────────────────────── */}

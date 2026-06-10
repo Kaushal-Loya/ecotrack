@@ -1,6 +1,7 @@
-import { useEffect, useState, useId } from 'react';
+import { useEffect, useState, useId, useCallback } from 'react';
 import { api } from '../utils/api.js';
 import GoalCard from '../components/GoalCard.js';
+import ConfirmModal from '../components/ConfirmModal.js';
 import type { Goal } from '../types/index.js';
 
 interface NewGoalForm {
@@ -21,6 +22,7 @@ export default function GoalsPage() {
   const [form, setForm] = useState<NewGoalForm>(EMPTY_FORM);
   const [submitting, setSubmitting] = useState(false);
   const [formError, setFormError] = useState<string | null>(null);
+  const [deleteTarget, setDeleteTarget] = useState<string | null>(null);
 
   function fetchGoals(): void {
     setLoading(true);
@@ -73,15 +75,20 @@ export default function GoalsPage() {
     }
   }
 
-  async function handleDelete(id: string): Promise<void> {
-    if (!confirm('Delete this goal?')) return;
+  const handleDeleteConfirm = useCallback(async () => {
+    if (!deleteTarget) return;
     try {
-      await api.delete(`/goals/${id}`);
-      setGoals((prev) => prev.filter((g) => g.id !== id));
+      await api.delete(`/goals/${deleteTarget}`);
+      setGoals((prev) => prev.filter((g) => g.id !== deleteTarget));
     } catch {
       setError('Failed to delete goal');
     }
-  }
+    setDeleteTarget(null);
+  }, [deleteTarget]);
+
+  const handleDeleteCancel = useCallback(() => {
+    setDeleteTarget(null);
+  }, []);
 
   const minDeadline = new Date();
   minDeadline.setDate(minDeadline.getDate() + 1);
@@ -208,12 +215,20 @@ export default function GoalsPage() {
           <ul className="space-y-4" role="list">
             {goals.map((goal) => (
               <li key={goal.id}>
-                <GoalCard goal={goal} onDelete={handleDelete} />
+                <GoalCard goal={goal} onDelete={(id) => setDeleteTarget(id)} />
               </li>
             ))}
           </ul>
         </section>
       )}
+
+      <ConfirmModal
+        open={deleteTarget !== null}
+        title="Delete goal"
+        message="Are you sure you want to delete this goal? This action cannot be undone."
+        onConfirm={handleDeleteConfirm}
+        onCancel={handleDeleteCancel}
+      />
     </div>
   );
 }

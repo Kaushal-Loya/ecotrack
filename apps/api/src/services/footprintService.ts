@@ -1,5 +1,4 @@
 import prisma from '../lib/prisma.js';
-import { ValidationError } from '../errors/AppError.js';
 import type { FootprintBreakdown, Category } from '../types/index.js';
 import {
   TRANSPORT_FACTORS,
@@ -8,51 +7,8 @@ import {
   SHOPPING_FACTORS,
 } from '../lib/emissionFactors.js';
 
-type EmissionFactorRecord = Awaited<ReturnType<typeof prisma.emissionFactor.findMany>>[number];
+export { computeCo2Kg, invalidateEmissionFactorCache, getAllEmissionFactors } from './emissionService.js';
 
-// In-memory cache for emission factors (loaded once at startup)
-let emissionFactorCache: Map<string, number> | null = null;
-
-async function getEmissionFactors(): Promise<Map<string, number>> {
-  if (emissionFactorCache) return emissionFactorCache;
-
-  const factors = await prisma.emissionFactor.findMany();
-  emissionFactorCache = new Map(
-    factors.map((f: EmissionFactorRecord) => [
-      `${f.category}:${f.subtype}`,
-      f.kgCo2,
-    ])
-  );
-  return emissionFactorCache;
-}
-
-export function invalidateEmissionFactorCache(): void {
-  emissionFactorCache = null;
-}
-
-/**
- * Compute CO₂ kg for a single activity.
- * Returns 0 if no factor found (safe default — log an unknown subtype).
- */
-export async function computeCo2Kg(
-  category: string,
-  subtype: string,
-  amount: number
-): Promise<number> {
-  const factors = await getEmissionFactors();
-  const factor = factors.get(`${category}:${subtype}`);
-  if (factor === undefined) {
-    throw new ValidationError(`Unknown activity type: ${category}/${subtype}`, {
-      subtype: [`No emission factor found for "${subtype}" in category "${category}"`],
-    });
-  }
-  return parseFloat((factor * amount).toFixed(4));
-}
-
-/**
- * Returns the current aggregate footprint for a user broken down by category.
- * Aggregates the last 365 days of activity logs.
- */
 export async function getUserFootprint(userId: string): Promise<FootprintBreakdown> {
   const since = new Date();
   since.setFullYear(since.getFullYear() - 1);
@@ -85,10 +41,6 @@ export async function getUserFootprint(userId: string): Promise<FootprintBreakdo
   return breakdown;
 }
 
-/**
- * Takes the onboarding form inputs, computes a full-year footprint projection,
- * saves a snapshot, and returns the breakdown.
- */
 export async function calculateAndSaveFootprint(
   userId: string,
   inputs: {
@@ -166,10 +118,4 @@ export async function getLatestSnapshot(
     shopping: snapshot.shopping,
     total: snapshot.totalKgYear,
   };
-}
-
-export async function getAllEmissionFactors(): Promise<
-  { category: string; subtype: string; unit: string; kgCo2: number; source: string }[]
-> {
-  return prisma.emissionFactor.findMany({ orderBy: [{ category: 'asc' }, { subtype: 'asc' }] });
 }
