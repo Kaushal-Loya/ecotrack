@@ -1,10 +1,8 @@
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
-import { PrismaClient } from '@prisma/client';
+import prisma from '../lib/prisma.js';
 import { ConflictError, AuthenticationError } from '../errors/AppError.js';
 import type { JwtPayload, TokenPair } from '../types/index.js';
-
-const prisma = new PrismaClient();
 const BCRYPT_ROUNDS = 12;
 
 function getEnv(key: string): string {

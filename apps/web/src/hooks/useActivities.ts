@@ -16,9 +16,8 @@ export function useActivities() {
         const { data } = await api.get('/activities', { params });
         setActivities(data.data as ActivityLog[]);
         setMeta(data.meta as PaginatedMeta);
-      } catch (err: unknown) {
+      } catch {
         setError('Failed to load activities');
-        console.error(err);
       } finally {
         setLoading(false);
       }
@@ -39,9 +38,8 @@ export function useActivities() {
         const activity = data.data as ActivityLog;
         setActivities((prev) => [activity, ...prev]);
         return activity;
-      } catch (err: unknown) {
+      } catch {
         setError('Failed to log activity');
-        console.error(err);
         return null;
       }
     },
@@ -53,9 +51,8 @@ export function useActivities() {
       await api.delete(`/activities/${id}`);
       setActivities((prev) => prev.filter((a) => a.id !== id));
       return true;
-    } catch (err: unknown) {
+    } catch {
       setError('Failed to delete activity');
-      console.error(err);
       return false;
     }
   }, []);

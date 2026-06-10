@@ -1,6 +1,7 @@
 import { useState, useId } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { api } from '../utils/api.js';
+import { EMISSION_COEFFICIENTS } from '../utils/emissions.js';
 
 const STEPS = ['Transport', 'Diet', 'Energy', 'Shopping', 'Review'];
 
@@ -80,18 +81,21 @@ export default function OnboardingPage() {
   }
 
   function estimateTotal(): number {
+    const W = 52;  // weeks per year
+    const M = 12;  // months per year
+    const c = EMISSION_COEFFICIENTS;
     return (
-      form.weeklyCarKm * 52 * 0.192 +
-      form.weeklyBusKm * 52 * 0.089 +
-      form.weeklyTrainKm * 52 * 0.041 +
-      form.yearlyFlightKm * 0.225 +
-      form.beefMealsPerWeek * 52 * 6.61 +
-      form.otherMeatMealsPerWeek * 52 * 1.36 +
-      form.vegetarianMealsPerWeek * 52 * 0.44 +
-      form.monthlyElectricityKwh * 12 * 0.233 +
-      form.monthlyGasKwh * 12 * 0.203 +
-      form.monthlyClothingItems * 12 * 10.5 +
-      form.monthlyOnlineOrders * 12 * 0.44
+      form.weeklyCarKm * W * c.carPerKm +
+      form.weeklyBusKm * W * c.busPerKm +
+      form.weeklyTrainKm * W * c.trainPerKm +
+      form.yearlyFlightKm * c.flightPerKm +
+      form.beefMealsPerWeek * W * c.beefPerMeal +
+      form.otherMeatMealsPerWeek * W * c.otherMeatPerMeal +
+      form.vegetarianMealsPerWeek * W * c.vegetarianPerMeal +
+      form.monthlyElectricityKwh * M * c.electricityPerKwh +
+      form.monthlyGasKwh * M * c.naturalGasPerKwh +
+      form.monthlyClothingItems * M * c.clothingPerItem +
+      form.monthlyOnlineOrders * M * c.onlineOrderPerItem
     );
   }
 

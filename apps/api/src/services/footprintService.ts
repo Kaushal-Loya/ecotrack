@@ -1,8 +1,13 @@
-import { PrismaClient } from '@prisma/client';
+import prisma from '../lib/prisma.js';
 import { NotFoundError, ValidationError } from '../errors/AppError.js';
 import type { FootprintBreakdown, Category } from '../types/index.js';
+import {
+  TRANSPORT_FACTORS,
+  DIET_FACTORS,
+  ENERGY_FACTORS,
+  SHOPPING_FACTORS,
+} from '../lib/emissionFactors.js';
 
-const prisma = new PrismaClient();
 type EmissionFactorRecord = Awaited<ReturnType<typeof prisma.emissionFactor.findMany>>[number];
 
 // In-memory cache for emission factors (loaded once at startup)
@@ -100,26 +105,27 @@ export async function calculateAndSaveFootprint(
     monthlyOnlineOrders: number;
   }
 ): Promise<FootprintBreakdown> {
-  const w = 52; // weeks per year
+  const WEEKS_PER_YEAR = 52;
+  const MONTHS_PER_YEAR = 12;
 
   const transportKg =
-    inputs.weeklyCarKm * w * 0.192 +
-    inputs.weeklyBusKm * w * 0.089 +
-    inputs.weeklyTrainKm * w * 0.041 +
-    inputs.yearlyFlightKm * 0.225;
+    inputs.weeklyCarKm * WEEKS_PER_YEAR * TRANSPORT_FACTORS.carPerKm +
+    inputs.weeklyBusKm * WEEKS_PER_YEAR * TRANSPORT_FACTORS.busPerKm +
+    inputs.weeklyTrainKm * WEEKS_PER_YEAR * TRANSPORT_FACTORS.trainPerKm +
+    inputs.yearlyFlightKm * TRANSPORT_FACTORS.flightPerKm;
 
   const dietKg =
-    inputs.beefMealsPerWeek * w * 6.61 +
-    inputs.otherMeatMealsPerWeek * w * 1.36 +
-    inputs.vegetarianMealsPerWeek * w * 0.44;
+    inputs.beefMealsPerWeek * WEEKS_PER_YEAR * DIET_FACTORS.beefPerMeal +
+    inputs.otherMeatMealsPerWeek * WEEKS_PER_YEAR * DIET_FACTORS.otherMeatPerMeal +
+    inputs.vegetarianMealsPerWeek * WEEKS_PER_YEAR * DIET_FACTORS.vegetarianPerMeal;
 
   const energyKg =
-    inputs.monthlyElectricityKwh * 12 * 0.233 +
-    inputs.monthlyGasKwh * 12 * 0.203;
+    inputs.monthlyElectricityKwh * MONTHS_PER_YEAR * ENERGY_FACTORS.electricityPerKwh +
+    inputs.monthlyGasKwh * MONTHS_PER_YEAR * ENERGY_FACTORS.naturalGasPerKwh;
 
   const shoppingKg =
-    inputs.monthlyClothingItems * 12 * 10.5 +
-    inputs.monthlyOnlineOrders * 12 * 0.44;
+    inputs.monthlyClothingItems * MONTHS_PER_YEAR * SHOPPING_FACTORS.clothingPerItem +
+    inputs.monthlyOnlineOrders * MONTHS_PER_YEAR * SHOPPING_FACTORS.onlineOrderPerItem;
 
   const breakdown: FootprintBreakdown = {
     transport: parseFloat(transportKg.toFixed(2)),
@@ -168,4 +174,3 @@ export async function getAllEmissionFactors(): Promise<
   return prisma.emissionFactor.findMany({ orderBy: [{ category: 'asc' }, { subtype: 'asc' }] });
 }
 
-export { NotFoundError };

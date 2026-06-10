@@ -1,5 +1,30 @@
 import type { Category } from '../types/index.js';
 
+/**
+ * Emission factor coefficients mirrored from the API for the client-side
+ * preview calculation on the onboarding page. These must be kept in sync
+ * with apps/api/src/lib/emissionFactors.ts.
+ *
+ * Sources: DEFRA 2023, IPCC AR6, WRAP industry estimates.
+ */
+export const EMISSION_COEFFICIENTS = {
+  // Transport (kg CO₂ per km)
+  carPerKm: 0.192,
+  busPerKm: 0.089,
+  trainPerKm: 0.041,
+  flightPerKm: 0.225,
+  // Diet (kg CO₂ per meal)
+  beefPerMeal: 6.61,
+  otherMeatPerMeal: 1.36,
+  vegetarianPerMeal: 0.44,
+  // Energy (kg CO₂ per kWh)
+  electricityPerKwh: 0.233,
+  naturalGasPerKwh: 0.203,
+  // Shopping (kg CO₂ per item)
+  clothingPerItem: 10.5,
+  onlineOrderPerItem: 0.44,
+} as const;
+
 /** Format a CO₂ value as a human-readable string */
 export function formatCo2(kg: number): string {
   if (kg >= 1000) {

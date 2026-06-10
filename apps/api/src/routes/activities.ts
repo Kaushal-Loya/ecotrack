@@ -1,13 +1,12 @@
 import { Router, Request, Response, NextFunction } from 'express';
 import { z } from 'zod';
-import { PrismaClient } from '@prisma/client';
+import prisma from '../lib/prisma.js';
 import { authenticate } from '../middleware/auth.js';
 import { validate } from '../middleware/validate.js';
 import { computeCo2Kg } from '../services/footprintService.js';
 import { NotFoundError, ForbiddenError } from '../errors/AppError.js';
 
 const router = Router();
-const prisma = new PrismaClient();
 
 const VALID_CATEGORIES = ['transport', 'diet', 'energy', 'shopping'] as const;
 
