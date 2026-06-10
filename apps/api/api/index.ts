@@ -1,8 +1,7 @@
-import 'dotenv/config';
 import { createApp } from '../src/app.js';
 
-// Vercel serverless functions require the Express app to be exported,
-// WITHOUT calling app.listen()
+// Vercel serverless: export the Express app WITHOUT calling app.listen()
+// dotenv is NOT used here — env vars are injected by Vercel at runtime.
 const app = createApp();
 
 module.exports = app;
